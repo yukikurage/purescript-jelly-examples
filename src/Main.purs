@@ -33,7 +33,7 @@ root = do
         [ classes [ pure "text-slate-900 p-3 flex justify-center shadow-inner" ]
         ]
         [ logo ]
-    , box [ classes [ pure "h-1 w-screen mb-10 bg-white shadow-md" ] ] []
+    , box [ classes [ pure "h-1 w-screen mb-10 bg-white" ] ] []
     , text jellyIs
     , whenEl isComplete $ box
         [ classes
@@ -44,9 +44,7 @@ root = do
         [ counter ]
     , whenEl isComplete $ box [ classes [ pure "m-10" ] ]
         [ popIn
-            [ do
-                title /\ _ <- typingEffectJelly "The Button"
-                text title
+            [ text =<< fst <$> typingEffectJelly "The Button"
             ]
         ]
     ]

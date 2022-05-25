@@ -24,14 +24,26 @@ counter :: Component Unit
 counter = do
   count /\ modifyCount <- newJelly 0
 
-  box [ classes [ pure "flex flex-col items-center gap-3" ] ]
-    [ popIn
+  popIn
+    [ box
+        [ classes
+            [ pure
+                "h-16 w-16 flex flex-col justify-center items-center relative"
+            ]
+        ]
         [ button
             [ classes
                 [ pure
-                    "bg-white h-16 w-16 text-3xl text-slate-900 hover:bg-opacity-80 transition-all flex justify-center items-center"
+                    "bg-white h-16 w-16 rotate-6 hover:rotate-0 transition-all absolute origin-center"
                 ]
             , on "click" \_ -> modifyCount (_ + 1)
+            ]
+            []
+        , box
+            [ classes
+                [ pure
+                    "flex justify-center items-center text-slate-900 text-3xl z-20 relative pointer-events-none"
+                ]
             ]
             [ text $ show <$> count ]
         ]
