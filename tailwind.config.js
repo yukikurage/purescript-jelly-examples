@@ -5,7 +5,12 @@ module.exports = {
     './src/**/*.purs',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        AlfaSlabOne: ['Alfa Slab One', 'cursive'],
+        Inconsolata: ['Inconsolata', 'monospace']
+      }
+    },
   },
   plugins: [],
 }

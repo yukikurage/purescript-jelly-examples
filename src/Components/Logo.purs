@@ -11,13 +11,13 @@ logo = do
   box
     [ classes
         [ pure
-            "relative w-56 h-8 z-10 overflow-hidden bg-white rounded-md shadow-md"
+            "relative w-56 mt-6 h-4 z-10 bg-fuchsia-600 flex flex-row justify-center items-end"
         ]
     ]
     [ box
         [ classes
             [ pure
-                "relative text-6xl z-20 font-serif font-extrabold text-slate-900 -top-4 left-3"
+                "relative text-5xl z-20 font-AlfaSlabOne font-extrabold text-white"
             ]
         ]
         [ text $ pure "JELLY" ]

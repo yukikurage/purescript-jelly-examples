@@ -2,6 +2,7 @@ module Components.Counter where
 
 import Prelude
 
+import Components.PopIn (popIn)
 import Data.Tuple.Nested ((/\))
 import Jelly.Data.Jelly (newJelly)
 import Jelly.Data.Props (classes, on)
@@ -19,19 +20,23 @@ message n = case n of
   18 -> "成人"
   x -> show x
 
-counter :: forall r. Component r
+counter :: Component Unit
 counter = do
   count /\ modifyCount <- newJelly 0
 
   box [ classes [ pure "flex flex-col items-center gap-3" ] ]
-    [ box [ classes [ pure "text-3xl text-white " ] ]
-        [ text $ show <$> count ]
-    , button
-        [ classes
-            [ pure
-                "bg-white rounded-md h-10 w-16 text-3xl text-slate-900 hover:rounded-lg transition-all"
-            ]
-        , on "click" \_ -> modifyCount (_ + 1)
+    [ popIn
+        [ box [ classes [ pure "text-3xl text-white " ] ]
+            [ text $ show <$> count ]
         ]
-        []
+    , popIn
+        [ button
+            [ classes
+                [ pure
+                    "bg-white h-10 w-16 text-3xl text-slate-900 hover:opacity-80 transition-all"
+                ]
+            , on "click" \_ -> modifyCount (_ + 1)
+            ]
+            []
+        ]
     ]
