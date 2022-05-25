@@ -18,7 +18,6 @@ to generate this file without the comments in this block.
   , "js-timers"
   , "prelude"
   , "strings"
-  , "transformers"
   , "tuples"
   ]
 , packages = ./packages.dhall
