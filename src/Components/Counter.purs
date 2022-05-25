@@ -4,9 +4,9 @@ import Prelude
 
 import Components.PopIn (popIn)
 import Data.Tuple.Nested ((/\))
-import Jelly.Data.Jelly (newJelly)
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, text)
+import Jelly.Hooks.UseState (useState)
 import Utils (box, button)
 
 message :: Int -> String
@@ -20,9 +20,9 @@ message n = case n of
   18 -> "成人"
   x -> show x
 
-counter :: Component Unit
+counter :: forall r. Component r
 counter = do
-  count /\ modifyCount <- newJelly 0
+  count /\ modifyCount <- useState 0
 
   popIn
     [ box

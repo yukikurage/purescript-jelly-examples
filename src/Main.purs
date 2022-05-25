@@ -8,7 +8,7 @@ import Components.PopIn (popIn)
 import Data.Tuple (fst)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Jellies.TypingEffectJelly (typingEffectJelly)
+import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Props (classes)
 import Jelly.HTML (Component, text, whenEl)
 import Jelly.RunComponent (runComponent)
@@ -18,9 +18,9 @@ main :: Effect Unit
 main = do
   runComponent unit root
 
-root :: Component Unit
+root :: forall r. Component r
 root = do
-  jellyIs /\ isComplete <- typingEffectJelly
+  jellyIs /\ isComplete <- useTypingString
     "Jelly is a easy way to create interactive web apps."
 
   box
@@ -44,7 +44,7 @@ root = do
         [ counter ]
     , whenEl isComplete $ box [ classes [ pure "m-10" ] ]
         [ popIn
-            [ text =<< fst <$> typingEffectJelly "The Button"
+            [ text =<< fst <$> useTypingString "The Button"
             ]
         ]
     ]
