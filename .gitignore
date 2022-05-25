@@ -8,5 +8,5 @@
 /.purs*
 /.psa*
 /.spago
-/public/
+/public/*
 !/public/index.html
