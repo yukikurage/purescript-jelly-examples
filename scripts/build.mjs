@@ -6,7 +6,7 @@ esbuild
     bundle: true,
     outfile: "public/index.js",
     minify: true,
-    sourcemap: true,
+    sourcemap: false,
     target: ["chrome70", "firefox57", "safari11", "edge16"],
     watch: false,
     logLevel: "info",
