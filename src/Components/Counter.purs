@@ -26,17 +26,13 @@ counter = do
 
   box [ classes [ pure "flex flex-col items-center gap-3" ] ]
     [ popIn
-        [ box [ classes [ pure "text-3xl text-white " ] ]
-            [ text $ show <$> count ]
-        ]
-    , popIn
         [ button
             [ classes
                 [ pure
-                    "bg-white h-10 w-16 text-3xl text-slate-900 hover:opacity-80 transition-all"
+                    "bg-white h-16 w-16 text-3xl text-slate-900 hover:bg-opacity-80 transition-all flex justify-center items-center"
                 ]
             , on "click" \_ -> modifyCount (_ + 1)
             ]
-            []
+            [ text $ show <$> count ]
         ]
     ]
