@@ -1,0 +1,28 @@
+name: Build and deploy website
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Install NPM packages
+      run: npm ci
+    - name: Build website
+      run: npm run build
+    - name: delete index.js from git .ignore
+      run: sed -i '/public/d' .gitignore
+    - name: Push to GitHub
+      uses: s0/git-publish-subdir-action@master
+      env:
+        REPO: self
+        BRANCH: clf-pages
+        FOLDER: public
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

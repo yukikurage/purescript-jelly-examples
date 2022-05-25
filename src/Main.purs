@@ -9,5 +9,5 @@ import Jelly.RunComponent (runComponent)
 
 main :: Effect Unit
 main = runComponent unit $
-  el "div" [ classes [ pure "flex justify-center h-full w-full" ] ]
-    [ text $ pure "Hello, Jelly" ]
+  el "div" [ classes [ pure "flex justify-center items-center h-40 w-full" ] ]
+    [ el "div" [ classes [ pure "text-3xl font-mono font-bold" ] ] [ text $ pure "Hello, Jelly" ] ]
