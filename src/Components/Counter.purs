@@ -3,6 +3,8 @@ module Components.Counter where
 import Prelude
 
 import Components.PopIn (popIn)
+import Contexts (Contexts)
+import Contexts.ColorMode (useColorScheme)
 import Data.Tuple.Nested ((/\))
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, text)
@@ -20,8 +22,9 @@ message n = case n of
   18 -> "成人"
   x -> show x
 
-counter :: forall r. Component r
+counter :: Component Contexts
 counter = do
+  colorScheme <- useColorScheme
   count /\ modifyCount <- useState 0
 
   popIn
@@ -34,7 +37,8 @@ counter = do
         [ button
             [ classes
                 [ pure
-                    "bg-white h-24 w-24 -rotate-[20deg] hover:rotate-0 transition-all absolute origin-center rounded-md"
+                    "h-24 w-24 -rotate-[20deg] hover:rotate-0 transition-all absolute origin-center rounded-md"
+                , colorScheme <#> _.background.reverse
                 ]
             , on "click" \_ -> modifyCount (_ + 1)
             ]
@@ -42,7 +46,8 @@ counter = do
         , box
             [ classes
                 [ pure
-                    "flex justify-center items-center text-slate-900 text-3xl z-20 relative pointer-events-none"
+                    "flex justify-center items-center text-3xl z-20 relative pointer-events-none transition-colors"
+                , colorScheme <#> _.text.reverse
                 ]
             ]
             [ text $ show <$> count ]

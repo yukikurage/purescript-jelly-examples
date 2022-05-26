@@ -3,11 +3,12 @@ module Main where
 import Prelude
 
 import Components.Counter (counter)
+import Components.Icon (icon)
 import Components.Icons (chevronLeft, chevronRight)
 import Components.Logo (logo)
 import Components.PopIn (popIn)
 import Contexts (Contexts)
-import Contexts.ColorMode (ColorMode(..), useColorMode)
+import Contexts.ColorMode (ColorMode(..), useColorMode, useColorScheme)
 import Data.Tuple (fst)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
@@ -15,8 +16,8 @@ import Effect.Class (liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Jelly (alone, newJelly)
-import Jelly.Data.Props (classes)
-import Jelly.HTML (Component, text, whenEl)
+import Jelly.Data.Props (classes, on)
+import Jelly.HTML (Component, emptyEl, text, whenEl)
 import Jelly.Hooks.UseState (useState)
 import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
 import Jelly.RunComponent (runComponent)
@@ -24,7 +25,7 @@ import Utils (box, button)
 
 main :: Effect Unit
 main = do
-  colorMode /\ modifyColorMode <- newJelly Dark
+  colorMode /\ modifyColorMode <- newJelly White
   runComponent { colorMode: colorMode /\ (\x -> modifyColorMode (const x)) }
     root
 
@@ -33,7 +34,8 @@ root = do
   jellyIs /\ _ <- useTypingString
     "Jelly is a easy way to create interactive web apps."
 
-  colorMode /\ _ <- useColorMode
+  colorMode /\ setColorMode <- useColorMode
+  colorScheme <- useColorScheme
 
   isDisplayExamples /\ modifyIsDisplayExamples <- useState false
 
@@ -45,19 +47,41 @@ root = do
   box
     [ classes
         [ pure
-            "h-screen w-screen relative text-white bg-slate-900 text-lg overflow-hidden flex flex-col items-center font-Inconsolata"
-        , do
-            cm <- colorMode
-            pure case cm of
-              White -> ""
-              Dark -> "dark"
+            "h-screen w-screen relative text-lg overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
+        , colorScheme <#> _.background.primary
+        , colorScheme <#> _.text.primary
         ]
     ]
     [ box
-        [ classes [ pure "text-slate-900 p-3 flex justify-center" ]
+        [ classes [ pure "py-3 px-8 flex justify-between w-screen" ]
         ]
-        [ logo ]
-    , box [ classes [ pure "h-1 w-screen mb-10 bg-white" ] ] []
+        [ box [] []
+        , logo
+        , button
+            [ classes
+                [ pure
+                    "rounded-full hover:scale-110 transition-all flex justify-center items-center"
+                ]
+            , on "click" \_ -> do
+                cm <- colorMode
+                case cm of
+                  White -> setColorMode Dark
+                  Dark -> setColorMode White
+            ]
+            [ icon do
+                cm <- colorMode
+                case cm of
+                  White -> pure "fa-solid fa-sun fa-lg"
+                  Dark -> pure "fa-solid fa-moon fa-lg"
+            ]
+        ]
+    , box
+        [ classes
+            [ pure "h-1 w-screen mb-10 transition-colors"
+            , colorScheme <#> _.background.reverse
+            ]
+        ]
+        []
     , text jellyIs
     , whenEl isDisplayExamples $ box
         [ classes
@@ -69,25 +93,25 @@ root = do
             [ button
                 [ classes
                     [ pure
-                        "h-12 w-12 text-White hover:-translate-x-1 transition-transform"
+                        "h-12 w-12 hover:-translate-x-1 transition-transform"
                     ]
                 ]
-                [ chevronLeft ]
+                [ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
             ]
         , counter
         , popIn
             [ button
                 [ classes
                     [ pure
-                        "h-12 w-12 text-White hover:translate-x-1 transition-transform"
+                        "h-12 w-12 hover:translate-x-1 transition-transform"
                     ]
                 ]
-                [ chevronRight ]
+                [ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
             ]
         ]
     , whenEl isDisplayExamples $ box [ classes [ pure "m-10" ] ]
         [ popIn
-            [ text =<< fst <$> useTypingString "The Button"
+            [ text =<< fst <$> useTypingString "A Button"
             ]
         ]
     ]
