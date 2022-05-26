@@ -21,6 +21,9 @@ import Jelly.Hooks.UseState (useState)
 import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
 import Jelly.RunComponent (runComponent)
 import Utils (box, button)
+import Web.HTML (window)
+import Web.HTML.Location (href, setHref)
+import Web.HTML.Window (location)
 
 main :: Effect Unit
 main = do
@@ -54,12 +57,12 @@ root = do
     [ box
         [ classes [ pure "py-3 px-8 flex justify-between w-screen" ]
         ]
-        [ box [] []
+        [ box [ classes [ pure "w-12" ] ] []
         , logo
         , button
             [ classes
                 [ pure
-                    "rounded-full hover:scale-110 transition-all flex justify-center items-center"
+                    "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
                 ]
             , on "click" \_ -> do
                 cm <- colorMode
@@ -108,9 +111,21 @@ root = do
                 [ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
             ]
         ]
-    , whenEl isDisplayExamples $ box [ classes [ pure "m-10" ] ]
-        [ popIn
-            [ text =<< fst <$> useTypingString "A Button"
+    , whenEl isDisplayExamples $ box
+        [ classes [ pure "flex flex-row w-full justify-between p-10" ] ]
+        [ box [ classes [ pure "w-12" ] ] []
+        , text =<< fst <$> useTypingString "A Button"
+        , button
+            [ classes
+                [ pure
+                    "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
+                ]
+            , on "click" \_ -> do
+                liftEffect $
+                  setHref "https://github.com/yukikurage/purescript-jelly"
+                    =<< location
+                    =<< window
             ]
+            [ icon $ pure "fa-xl fa-brands fa-github" ]
         ]
     ]
