@@ -28,13 +28,13 @@ counter = do
     [ box
         [ classes
             [ pure
-                "h-16 w-16 flex flex-col justify-center items-center relative"
+                "h-24 w-24 flex flex-col justify-center items-center relative"
             ]
         ]
         [ button
             [ classes
                 [ pure
-                    "bg-white h-16 w-16 rotate-6 hover:rotate-0 transition-all absolute origin-center"
+                    "bg-white h-24 w-24 -rotate-[20deg] hover:rotate-0 transition-all absolute origin-center rounded-md"
                 ]
             , on "click" \_ -> modifyCount (_ + 1)
             ]

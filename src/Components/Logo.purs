@@ -11,7 +11,7 @@ logo = do
   box
     [ classes
         [ pure
-            "relative w-56 mt-6 h-4 z-10 bg-fuchsia-600 flex flex-row justify-center items-end"
+            "relative w-56 mt-6 h-4 z-10 bg-fuchsia-600 flex flex-row justify-center items-end rounded-t-md"
         ]
     ]
     [ box

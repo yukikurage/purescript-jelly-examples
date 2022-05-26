@@ -17,7 +17,7 @@ useTypingString str = do
   state /\ modifyState <- useState "■"
   complete /\ modifyComplete <- useState false
 
-  id <- liftEffect $ setInterval 40 $ alone do
+  id <- liftEffect $ setInterval 50 $ alone do
     s <- state
     ifM complete
       do

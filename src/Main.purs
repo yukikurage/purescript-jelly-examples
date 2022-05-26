@@ -3,6 +3,7 @@ module Main where
 import Prelude
 
 import Components.Counter (counter)
+import Components.Icons (chevronLeft, chevronRight)
 import Components.Logo (logo)
 import Components.PopIn (popIn)
 import Contexts (Contexts)
@@ -19,7 +20,7 @@ import Jelly.HTML (Component, text, whenEl)
 import Jelly.Hooks.UseState (useState)
 import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
 import Jelly.RunComponent (runComponent)
-import Utils (box)
+import Utils (box, button)
 
 main :: Effect Unit
 main = do
@@ -53,7 +54,7 @@ root = do
         ]
     ]
     [ box
-        [ classes [ pure "text-slate-900 p-3 flex justify-center shadow-inner" ]
+        [ classes [ pure "text-slate-900 p-3 flex justify-center" ]
         ]
         [ logo ]
     , box [ classes [ pure "h-1 w-screen mb-10 bg-white" ] ] []
@@ -61,10 +62,29 @@ root = do
     , whenEl isDisplayExamples $ box
         [ classes
             [ pure
-                "flex-grow flex flex-col items-center justify-center gap-10"
+                "flex-grow flex flex-row items-center justify-between w-full px-10"
             ]
         ]
-        [ counter ]
+        [ popIn
+            [ button
+                [ classes
+                    [ pure
+                        "h-12 w-12 text-White hover:-translate-x-1 transition-transform"
+                    ]
+                ]
+                [ chevronLeft ]
+            ]
+        , counter
+        , popIn
+            [ button
+                [ classes
+                    [ pure
+                        "h-12 w-12 text-White hover:translate-x-1 transition-transform"
+                    ]
+                ]
+                [ chevronRight ]
+            ]
+        ]
     , whenEl isDisplayExamples $ box [ classes [ pure "m-10" ] ]
         [ popIn
             [ text =<< fst <$> useTypingString "The Button"
