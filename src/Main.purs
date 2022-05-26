@@ -34,7 +34,7 @@ main = do
 root :: Component Contexts
 root = do
   jellyIs /\ _ <- useTypingString
-    "Jelly is a easy way to create interactive web apps."
+    "An easy way to create interactive web apps."
 
   colorMode /\ setColorMode <- useColorMode
   colorScheme <- useColorScheme
