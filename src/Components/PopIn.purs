@@ -11,8 +11,8 @@ import Jelly.HTML (Component)
 import Jelly.Hooks.UseState (useState)
 import Utils (box)
 
-popIn :: forall r. Array (Component r) -> Component r
-popIn children = do
+popIn :: forall r. Component r -> Component r
+popIn child = do
   isMounted /\ modifyIsMounted <- useState false
 
   _ <- liftEffect $ setTimeout 100 $ alone do
@@ -25,4 +25,4 @@ popIn children = do
         , pure "transition-all"
         ]
     ]
-    children
+    [ child ]

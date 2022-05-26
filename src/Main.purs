@@ -22,7 +22,7 @@ import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
 import Jelly.RunComponent (runComponent)
 import Utils (box, button)
 import Web.HTML (window)
-import Web.HTML.Location (href, setHref)
+import Web.HTML.Location (setHref)
 import Web.HTML.Window (location)
 
 main :: Effect Unit
@@ -91,31 +91,27 @@ root = do
                 "flex-grow flex flex-row items-center justify-between w-full px-10"
             ]
         ]
-        [ popIn
-            [ button
-                [ classes
-                    [ pure
-                        "h-12 w-12 hover:-translate-x-1 transition-transform"
-                    ]
+        [ popIn $ button
+            [ classes
+                [ pure
+                    "h-12 w-12 hover:-translate-x-1 transition-transform"
                 ]
-                [ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
             ]
+            [ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
         , counter
-        , popIn
-            [ button
-                [ classes
-                    [ pure
-                        "h-12 w-12 hover:translate-x-1 transition-transform"
-                    ]
+        , popIn $ button
+            [ classes
+                [ pure
+                    "h-12 w-12 hover:translate-x-1 transition-transform"
                 ]
-                [ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
             ]
+            [ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
         ]
     , whenEl isDisplayExamples $ box
         [ classes [ pure "flex flex-row w-full justify-between p-10" ] ]
         [ box [ classes [ pure "w-12" ] ] []
         , text =<< fst <$> useTypingString "A Button"
-        , button
+        , popIn $ button
             [ classes
                 [ pure
                     "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"

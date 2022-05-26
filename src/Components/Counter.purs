@@ -27,37 +27,35 @@ counter = do
   colorScheme <- useColorScheme
   count /\ modifyCount <- useState 0
 
-  popIn
+  popIn $ box
+    [ classes
+        [ pure
+            "h-24 w-24 flex flex-col justify-center items-center relative"
+        ]
+    ]
     [ box
         [ classes
             [ pure
-                "h-24 w-24 flex flex-col justify-center items-center relative"
+                "h-24 w-24 -rotate-0 hover:rotate-0 transition-all absolute origin-center rounded-md"
+            , colorScheme <#> _.background.highlight
             ]
         ]
-        [ box
-            [ classes
-                [ pure
-                    "h-24 w-24 -rotate-0 hover:rotate-0 transition-all absolute origin-center rounded-md"
-                , colorScheme <#> _.background.highlight
-                ]
+        []
+    , button
+        [ classes
+            [ pure
+                "h-24 w-24 hover:rotate-[20deg] transition-all absolute origin-center rounded-md"
+            , colorScheme <#> _.background.reverse
             ]
-            []
-        , button
-            [ classes
-                [ pure
-                    "h-24 w-24 hover:rotate-[20deg] transition-all absolute origin-center rounded-md"
-                , colorScheme <#> _.background.reverse
-                ]
-            , on "click" \_ -> modifyCount (_ + 1)
-            ]
-            []
-        , box
-            [ classes
-                [ pure
-                    "flex justify-center items-center text-3xl z-20 relative pointer-events-none transition-colors"
-                , colorScheme <#> _.text.reverse
-                ]
-            ]
-            [ text $ show <$> count ]
+        , on "click" \_ -> modifyCount (_ + 1)
         ]
+        []
+    , box
+        [ classes
+            [ pure
+                "flex justify-center items-center text-3xl z-20 relative pointer-events-none transition-colors"
+            , colorScheme <#> _.text.reverse
+            ]
+        ]
+        [ text $ show <$> count ]
     ]
