@@ -43,14 +43,14 @@ getColorScheme = case _ of
         }
     , background:
         { primary: "bg-white"
-        , highlight: "bg-pink-600"
+        , highlight: "bg-pink-500"
         , reverse: "bg-slate-900"
         }
     }
   Dark ->
     { text:
         { primary: "text-white"
-        , highlight: "text-pink-600"
+        , highlight: "text-pink-500"
         , reverse: "text-slate-900"
         }
     , background:

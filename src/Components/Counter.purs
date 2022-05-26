@@ -34,10 +34,18 @@ counter = do
                 "h-24 w-24 flex flex-col justify-center items-center relative"
             ]
         ]
-        [ button
+        [ box
             [ classes
                 [ pure
-                    "h-24 w-24 -rotate-[20deg] hover:rotate-0 transition-all absolute origin-center rounded-md"
+                    "h-24 w-24 -rotate-0 hover:rotate-0 transition-all absolute origin-center rounded-md"
+                , colorScheme <#> _.background.highlight
+                ]
+            ]
+            []
+        , button
+            [ classes
+                [ pure
+                    "h-24 w-24 hover:rotate-[20deg] transition-all absolute origin-center rounded-md"
                 , colorScheme <#> _.background.reverse
                 ]
             , on "click" \_ -> modifyCount (_ + 1)
