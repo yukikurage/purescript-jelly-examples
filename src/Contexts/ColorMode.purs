@@ -10,14 +10,14 @@ import Jelly.Hooks.UseContext (useContext)
 data ColorMode = White | Dark
 
 type ColorSchemeInternal =
-  { primary :: String
-  , highlight :: String
-  , reverse :: String
+  { text :: String
+  , background :: String
   }
 
-type ColorScheme =
-  { text :: ColorSchemeInternal
-  , background :: ColorSchemeInternal
+type ColorScheme internal =
+  { primary :: internal
+  , highlight :: internal
+  , reverse :: internal
   }
 
 derive instance Eq ColorMode
@@ -33,35 +33,53 @@ useColorMode = do
   { colorMode } <- useContext
   pure colorMode
 
-getColorScheme :: ColorMode -> ColorScheme
+getColorScheme :: ColorMode -> ColorScheme ColorSchemeInternal
 getColorScheme = case _ of
   White ->
-    { text:
-        { primary: "text-slate-900"
-        , highlight: "text-pink-600"
-        , reverse: "text-white"
+    { primary:
+        { text: "text-slate-900"
+        , background: "bg-white"
         }
-    , background:
-        { primary: "bg-white"
-        , highlight: "bg-pink-500"
-        , reverse: "bg-slate-900"
+    , highlight:
+        { text: "text-slate-900"
+        , background: "bg-pink-500"
+        }
+    , reverse:
+        { text: "text-white"
+        , background: "bg-slate-900"
         }
     }
   Dark ->
-    { text:
-        { primary: "text-white"
-        , highlight: "text-pink-500"
-        , reverse: "text-slate-900"
+    { primary:
+        { text: "text-white"
+        , background: "bg-slate-900"
         }
-    , background:
-        { primary: "bg-slate-900"
-        , highlight: "bg-pink-600"
-        , reverse: "bg-white"
+    , highlight:
+        { text: "text-white"
+        , background: "bg-pink-600"
+        }
+    , reverse:
+        { text: "text-slate-900"
+        , background: "bg-white"
         }
     }
 
+mergeColorScheme :: ColorScheme ColorSchemeInternal -> ColorScheme String
+mergeColorScheme colorScheme =
+  let
+    merge :: ColorSchemeInternal -> String
+    merge colorSchemeInternal = colorSchemeInternal.text <> " " <>
+      colorSchemeInternal.background
+  in
+    { primary: merge colorScheme.primary
+    , highlight: merge colorScheme.highlight
+    , reverse: merge colorScheme.reverse
+    }
+
 useColorScheme
-  :: forall r. Hooks (Record (ColorModeContext r)) (Jelly ColorScheme)
+  :: forall r
+   . Hooks (Record (ColorModeContext r))
+       (Jelly (ColorScheme ColorSchemeInternal))
 useColorScheme = do
   colorMode /\ _ <- useColorMode
   pure $ getColorScheme <$> colorMode

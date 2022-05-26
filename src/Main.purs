@@ -7,7 +7,7 @@ import Components.Icon (icon)
 import Components.Logo (logo)
 import Components.PopIn (popIn)
 import Contexts (Contexts)
-import Contexts.ColorMode (ColorMode(..), useColorMode, useColorScheme)
+import Contexts.ColorMode (ColorMode(..), mergeColorScheme, useColorMode, useColorScheme)
 import Data.Tuple (fst)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
@@ -49,9 +49,8 @@ root = do
   box
     [ classes
         [ pure
-            "h-screen w-screen relative text-lg overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
-        , colorScheme <#> _.background.primary
-        , colorScheme <#> _.text.primary
+            "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
+        , colorScheme <#> mergeColorScheme >>> _.primary
         ]
     ]
     [ box
@@ -79,42 +78,45 @@ root = do
         ]
     , box
         [ classes
-            [ pure "h-1 w-screen mb-10 transition-colors"
-            , colorScheme <#> _.background.reverse
+            [ pure "h-1 w-screen transition-colors"
+            , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
         ]
         []
-    , text jellyIs
+    , box [ classes [ pure "py-6" ] ]
+        [ text jellyIs ]
     , whenEl isDisplayExamples $ box
         [ classes
             [ pure
-                "flex-grow flex flex-row items-center justify-between w-full px-10"
+                "flex-grow flex flex-row items-center justify-between w-full"
             ]
         ]
-        [ popIn $ button
+        [ button
             [ classes
                 [ pure
-                    "h-12 w-12 hover:-translate-x-1 transition-transform"
+                    "h-full w-32 hover:-translate-x-1 transition-transform"
                 ]
             ]
-            [ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
+            [ popIn $ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
         , counter
-        , popIn $ button
+        , button
             [ classes
                 [ pure
-                    "h-12 w-12 hover:translate-x-1 transition-transform"
+                    "h-full w-32 hover:translate-x-1 transition-transform"
                 ]
             ]
-            [ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
+            [ popIn $ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
         ]
     , whenEl isDisplayExamples $ box
-        [ classes [ pure "flex flex-row w-full justify-between p-10" ] ]
+        [ classes
+            [ pure "flex flex-row w-full justify-between items-center p-10" ]
+        ]
         [ box [ classes [ pure "w-12" ] ] []
         , text =<< fst <$> useTypingString "A Button"
-        , popIn $ button
+        , button
             [ classes
                 [ pure
-                    "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
+                    "w-12 h-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
                 ]
             , on "click" \_ -> do
                 liftEffect $
@@ -122,6 +124,6 @@ root = do
                     =<< location
                     =<< window
             ]
-            [ icon $ pure "fa-xl fa-brands fa-github" ]
+            [ popIn $ icon $ pure "fa-xl fa-brands fa-github" ]
         ]
     ]

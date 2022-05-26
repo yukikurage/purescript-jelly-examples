@@ -20,9 +20,9 @@ popIn child = do
 
   box
     [ classes
-        [ ifM isMounted (pure "scale-100 opacity-100")
+        [ pure "transition-all"
+        , ifM isMounted (pure "scale-100 opacity-100")
             (pure "scale-50 opacity-0")
-        , pure "transition-all"
         ]
     ]
     [ child ]

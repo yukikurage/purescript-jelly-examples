@@ -4,7 +4,7 @@ import Prelude
 
 import Components.PopIn (popIn)
 import Contexts (Contexts)
-import Contexts.ColorMode (useColorScheme)
+import Contexts.ColorMode (mergeColorScheme, useColorScheme)
 import Data.Tuple.Nested ((/\))
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, text)
@@ -37,7 +37,7 @@ counter = do
         [ classes
             [ pure
                 "h-24 w-24 -rotate-0 hover:rotate-0 transition-all absolute origin-center rounded-md"
-            , colorScheme <#> _.background.highlight
+            , colorScheme <#> mergeColorScheme >>> _.highlight
             ]
         ]
         []
@@ -45,7 +45,7 @@ counter = do
         [ classes
             [ pure
                 "h-24 w-24 hover:rotate-[20deg] transition-all absolute origin-center rounded-md"
-            , colorScheme <#> _.background.reverse
+            , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
         , on "click" \_ -> modifyCount (_ + 1)
         ]
@@ -54,7 +54,7 @@ counter = do
         [ classes
             [ pure
                 "flex justify-center items-center text-3xl z-20 relative pointer-events-none transition-colors"
-            , colorScheme <#> _.text.reverse
+            , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
         ]
         [ text $ show <$> count ]
