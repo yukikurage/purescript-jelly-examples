@@ -103,25 +103,25 @@ let upstream =
         sha256:985f90fa68fd8b43b14c777d6ec2c161c4dd9009563b6f51685a54e4a26bf8ff
 
 in  upstream
-  with jelly = ./.spago/jelly/ad15b95194504b46b660f440ab9fdb712aba7d26/spago.dhall as Location
-    -- { dependencies =
-    --   [ "effect"
-    --   , "foldable-traversable"
-    --   , "maybe"
-    --   , "prelude"
-    --   , "refs"
-    --   , "safely"
-    --   , "strings"
-    --   , "tailrec"
-    --   , "transformers"
-    --   , "tuples"
-    --   , "unfoldable"
-    --   , "web-dom"
-    --   , "web-events"
-    --   , "web-html"
-    --   ]
-    -- , repo =
-    --     "https://github.com/yukikurage/purescript-jelly"
-    -- , version =
-    --     "ad15b95194504b46b660f440ab9fdb712aba7d26"
-    -- }
+  with jelly = {- ./.spago/jelly/ad15b95194504b46b660f440ab9fdb712aba7d26/spago.dhall as Location -}
+    { dependencies =
+      [ "effect"
+      , "foldable-traversable"
+      , "maybe"
+      , "prelude"
+      , "refs"
+      , "safely"
+      , "strings"
+      , "tailrec"
+      , "transformers"
+      , "tuples"
+      , "unfoldable"
+      , "web-dom"
+      , "web-events"
+      , "web-html"
+      ]
+    , repo =
+        "https://github.com/yukikurage/purescript-jelly"
+    , version =
+        "ad15b95194504b46b660f440ab9fdb712aba7d26"
+    }
