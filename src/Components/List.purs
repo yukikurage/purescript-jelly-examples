@@ -4,7 +4,7 @@ import Prelude
 
 import Contexts (Contexts)
 
-listItem =
+-- listItem =
 
 -- list :: Component Contexts
 -- list
