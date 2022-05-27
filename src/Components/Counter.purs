@@ -44,7 +44,7 @@ counter = do
     , button
         [ classes
             [ pure
-                "h-24 w-24 hover:rotate-[20deg] transition-all absolute origin-center rounded-md"
+                "h-24 w-24 hover:rotate-[20deg] shadow transition-all absolute origin-center rounded-md"
             , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
         , on "click" \_ -> modifyCount (_ + 1)

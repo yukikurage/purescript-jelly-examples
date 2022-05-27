@@ -11,7 +11,7 @@ import Contexts.ColorMode (ColorMode(..), mergeColorScheme, useColorMode, useCol
 import Data.Tuple (fst)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Effect.Class (liftEffect)
+import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Jelly (alone, newJelly)
@@ -30,6 +30,13 @@ main = do
   colorMode /\ modifyColorMode <- newJelly White
   runComponent { colorMode: colorMode /\ (\x -> modifyColorMode (const x)) }
     root
+
+openLink :: forall m. MonadEffect m => String -> m Unit
+openLink str = liftEffect $
+  setHref
+    str
+    =<< location
+    =<< window
 
 root :: Component Contexts
 root = do
@@ -76,13 +83,13 @@ root = do
                   Dark -> pure "fa-solid fa-moon fa-lg"
             ]
         ]
-    , box
-        [ classes
-            [ pure "h-1 w-screen transition-colors"
-            , colorScheme <#> mergeColorScheme >>> _.reverse
-            ]
-        ]
-        []
+    -- , box
+    --     [ classes
+    --         [ pure "h-1 w-screen transition-colors"
+    --         , colorScheme <#> mergeColorScheme >>> _.reverse
+    --         ]
+    --     ]
+    --     []
     , box [ classes [ pure "py-6" ] ]
         [ text jellyIs ]
     , whenEl isDisplayExamples $ box
@@ -109,22 +116,26 @@ root = do
         ]
     , whenEl isDisplayExamples $ box
         [ classes
-            [ pure "flex flex-row w-full justify-between items-center p-10" ]
+            [ pure "flex flex-row w-full justify-start items-center p-10" ]
         ]
-        [ box [ classes [ pure "w-12" ] ] []
-        , text =<< fst <$> useTypingString "A Button"
-        , button
+        [ button
             [ classes
                 [ pure
-                    "w-12 h-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
+                    "w-12 h-12 px-2 flex justify-center items-center"
                 ]
-            , on "click" \_ -> do
-                liftEffect $
-                  setHref
-                    "https://github.com/yukikurage/purescript-jelly-examples"
-                    =<< location
-                    =<< window
+            , on "click" \_ -> openLink
+                "https://github.com/yukikurage/purescript-jelly-examples"
             ]
-            [ popIn $ icon $ pure "fa-xl fa-brands fa-github" ]
+            [ popIn $ icon $ pure
+                "fa-xl fa-brands fa-github flex justify-center items-center hover:scale-110 transition-all "
+            ]
+        , box
+            [ classes
+                [ pure
+                    "flex-grow flex flex-row items-center justify-center w-full"
+                ]
+            ]
+            [ text =<< fst <$> useTypingString "A Button" ]
+        , box [ classes [ pure "w-12" ] ] []
         ]
     ]

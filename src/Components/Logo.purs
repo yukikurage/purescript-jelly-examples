@@ -22,7 +22,7 @@ logo = do
     [ box
         [ classes
             [ pure
-                "relative text-5xl z-20 font-AlfaSlabOne font-extrabold transition-colors"
+                "relative text-5xl z-20 font-AlfaSlabOne font-extrabold transition-colors drop-shadow"
             ]
         ]
         [ text $ pure "JELLY" ]
