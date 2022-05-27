@@ -120,7 +120,8 @@ root = do
                 ]
             , on "click" \_ -> do
                 liftEffect $
-                  setHref "https://github.com/yukikurage/purescript-jelly"
+                  setHref
+                    "https://github.com/yukikurage/purescript-jelly-examples"
                     =<< location
                     =<< window
             ]
