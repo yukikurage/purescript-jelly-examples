@@ -7,7 +7,7 @@ import Jelly.Data.Hooks (Hooks)
 import Jelly.Data.Jelly (Jelly)
 import Jelly.Hooks.UseContext (useContext)
 
-data ColorMode = White | Dark
+data ColorMode = Light | Dark
 
 type ColorSchemeInternal =
   { text :: String
@@ -35,7 +35,7 @@ useColorMode = do
 
 getColorScheme :: ColorMode -> ColorScheme ColorSchemeInternal
 getColorScheme = case _ of
-  White ->
+  Light ->
     { primary:
         { text: "text-slate-900"
         , background: "bg-white"

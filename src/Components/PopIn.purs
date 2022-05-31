@@ -25,4 +25,4 @@ popIn child = do
             (pure "scale-50 opacity-0")
         ]
     ]
-    [ child ]
+    child

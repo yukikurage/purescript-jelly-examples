@@ -16,7 +16,7 @@ import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Jelly (alone, newJelly)
 import Jelly.Data.Props (classes, on)
-import Jelly.HTML (Component, text, whenEl)
+import Jelly.HTML (Component, elEmpty, elWhen, text)
 import Jelly.Hooks.UseState (useState)
 import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
 import Jelly.RunComponent (runComponent)
@@ -27,7 +27,7 @@ import Web.HTML.Window (location)
 
 main :: Effect Unit
 main = do
-  colorMode /\ modifyColorMode <- newJelly White
+  colorMode /\ modifyColorMode <- newJelly Light
   runComponent { colorMode: colorMode /\ (\x -> modifyColorMode (const x)) }
     root
 
@@ -60,12 +60,14 @@ root = do
         , colorScheme <#> mergeColorScheme >>> _.primary
         ]
     ]
-    [ box
+    do
+      box
         [ classes [ pure "py-3 px-8 flex justify-between w-screen" ]
         ]
-        [ box [ classes [ pure "w-12" ] ] []
-        , logo
-        , button
+        do
+          box [ classes [ pure "w-12" ] ] elEmpty
+          logo
+          button
             [ classes
                 [ pure
                     "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
@@ -73,52 +75,51 @@ root = do
             , on "click" \_ -> do
                 cm <- colorMode
                 case cm of
-                  White -> setColorMode Dark
-                  Dark -> setColorMode White
+                  Light -> setColorMode Dark
+                  Dark -> setColorMode Light
             ]
-            [ icon do
+            do
+              icon do
                 cm <- colorMode
                 case cm of
-                  White -> pure "fa-solid fa-sun fa-lg"
+                  Light -> pure "fa-solid fa-sun fa-lg"
                   Dark -> pure "fa-solid fa-moon fa-lg"
-            ]
-        ]
-    -- , box
-    --     [ classes
-    --         [ pure "h-1 w-screen transition-colors"
-    --         , colorScheme <#> mergeColorScheme >>> _.reverse
-    --         ]
-    --     ]
-    --     []
-    , box [ classes [ pure "py-6" ] ]
-        [ text jellyIs ]
-    , whenEl isDisplayExamples $ box
+
+      box [ classes [ pure "py-6" ] ] $ text jellyIs
+
+      elWhen isDisplayExamples $ box
         [ classes
             [ pure
                 "flex-grow flex flex-row items-center justify-between w-full"
             ]
         ]
-        [ button
+        do
+          button
             [ classes
                 [ pure
                     "h-full w-32 hover:-translate-x-1 transition-transform"
                 ]
             ]
-            [ popIn $ icon $ pure "fa-xl fa-solid fa-chevron-left" ]
-        , counter
-        , button
+            $ popIn
+            $ icon
+            $ pure "fa-xl fa-solid fa-chevron-left"
+          counter
+          button
             [ classes
                 [ pure
                     "h-full w-32 hover:translate-x-1 transition-transform"
                 ]
             ]
-            [ popIn $ icon $ pure "fa-xl fa-solid fa-chevron-right" ]
-        ]
-    , whenEl isDisplayExamples $ box
+            $ popIn
+            $ icon
+            $ pure "fa-xl fa-solid fa-chevron-right"
+
+      elWhen isDisplayExamples $ box
         [ classes
             [ pure "flex flex-row w-full justify-start items-center p-10" ]
         ]
-        [ button
+        do
+          button
             [ classes
                 [ pure
                     "w-12 h-12 px-2 flex justify-center items-center"
@@ -126,16 +127,16 @@ root = do
             , on "click" \_ -> openLink
                 "https://github.com/yukikurage/purescript-jelly-examples"
             ]
-            [ popIn $ icon $ pure
+            $ popIn
+            $ icon
+            $ pure
                 "fa-xl fa-brands fa-github flex justify-center items-center hover:scale-110 transition-all "
-            ]
-        , box
+
+          box
             [ classes
                 [ pure
                     "flex-grow flex flex-row items-center justify-center w-full"
                 ]
             ]
-            [ text =<< fst <$> useTypingString "A Button" ]
-        , box [ classes [ pure "w-12" ] ] []
-        ]
-    ]
+            $ text =<< fst <$> useTypingString "A Button"
+          box [ classes [ pure "w-12" ] ] elEmpty
