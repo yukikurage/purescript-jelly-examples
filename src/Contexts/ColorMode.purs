@@ -2,9 +2,8 @@ module Contexts.ColorMode where
 
 import Prelude
 
-import Data.Tuple.Nested (type (/\), (/\))
 import Jelly.Data.Hooks (Hooks)
-import Jelly.Data.Jelly (Jelly)
+import Jelly.Data.Jelly (Jelly, JellyRef, read)
 import Jelly.Hooks.UseContext (useContext)
 
 data ColorMode = Light | Dark
@@ -23,12 +22,10 @@ type ColorScheme internal =
 derive instance Eq ColorMode
 
 type ColorModeContext r =
-  (colorMode :: Jelly ColorMode /\ (ColorMode -> Jelly Unit) | r)
+  (colorMode :: JellyRef ColorMode | r)
 
 useColorMode
-  :: forall r
-   . Hooks (Record (ColorModeContext r))
-       (Jelly ColorMode /\ (ColorMode -> Jelly Unit))
+  :: forall r. Hooks (Record (ColorModeContext r)) (JellyRef ColorMode)
 useColorMode = do
   { colorMode } <- useContext
   pure colorMode
@@ -81,5 +78,5 @@ useColorScheme
    . Hooks (Record (ColorModeContext r))
        (Jelly (ColorScheme ColorSchemeInternal))
 useColorScheme = do
-  colorMode /\ _ <- useColorMode
-  pure $ getColorScheme <$> colorMode
+  colorMode <- useColorMode
+  pure $ getColorScheme <$> read colorMode

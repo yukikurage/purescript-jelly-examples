@@ -14,7 +14,7 @@ import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UseTypingString (useTypingString)
-import Jelly.Data.Jelly (alone, newJelly)
+import Jelly.Data.Jelly (new, read, set)
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, elEmpty, elWhen, text)
 import Jelly.Hooks.UseState (useState)
@@ -27,8 +27,8 @@ import Web.HTML.Window (location)
 
 main :: Effect Unit
 main = do
-  colorMode /\ modifyColorMode <- newJelly Light
-  runComponent { colorMode: colorMode /\ (\x -> modifyColorMode (const x)) }
+  colorMode <- new Light
+  runComponent { colorMode }
     root
 
 openLink :: forall m. MonadEffect m => String -> m Unit
@@ -43,13 +43,12 @@ root = do
   jellyIs /\ _ <- useTypingString
     "An easy way to create interactive web apps."
 
-  colorMode /\ setColorMode <- useColorMode
+  colorMode <- useColorMode
   colorScheme <- useColorScheme
 
-  isDisplayExamples /\ modifyIsDisplayExamples <- useState false
+  isDisplayExamples <- useState false
 
-  id <- liftEffect $ setTimeout 400 $ alone $ modifyIsDisplayExamples
-    (const true)
+  id <- liftEffect $ setTimeout 400 $ set isDisplayExamples true
 
   useUnmountJelly $ liftEffect $ clearTimeout id
 
@@ -73,21 +72,21 @@ root = do
                     "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
                 ]
             , on "click" \_ -> do
-                cm <- colorMode
+                cm <- read colorMode
                 case cm of
-                  Light -> setColorMode Dark
-                  Dark -> setColorMode Light
+                  Light -> set colorMode Dark
+                  Dark -> set colorMode Light
             ]
             do
               icon do
-                cm <- colorMode
+                cm <- read colorMode
                 case cm of
                   Light -> pure "fa-solid fa-sun fa-lg"
                   Dark -> pure "fa-solid fa-moon fa-lg"
 
       box [ classes [ pure "py-6" ] ] $ text jellyIs
 
-      elWhen isDisplayExamples $ box
+      elWhen (read isDisplayExamples) $ box
         [ classes
             [ pure
                 "flex-grow flex flex-row items-center justify-between w-full"
@@ -114,7 +113,7 @@ root = do
             $ icon
             $ pure "fa-xl fa-solid fa-chevron-right"
 
-      elWhen isDisplayExamples $ box
+      elWhen (read isDisplayExamples) $ box
         [ classes
             [ pure "flex flex-row w-full justify-start items-center p-10" ]
         ]

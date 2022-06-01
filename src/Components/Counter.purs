@@ -5,7 +5,7 @@ import Prelude
 import Components.PopIn (popIn)
 import Contexts (Contexts)
 import Contexts.ColorMode (mergeColorScheme, useColorScheme)
-import Data.Tuple.Nested ((/\))
+import Jelly.Data.Jelly (modify, read)
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, elEmpty, text)
 import Jelly.Hooks.UseState (useState)
@@ -14,7 +14,7 @@ import Utils (box, button)
 counter :: Component Contexts
 counter = do
   colorScheme <- useColorScheme
-  count /\ modifyCount <- useState 0
+  count <- useState 0
 
   popIn $ box
     [ classes
@@ -35,7 +35,7 @@ counter = do
                 "h-24 w-24 hover:rotate-[20deg] shadow transition-all absolute origin-center rounded-md"
             , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
-        , on "click" \_ -> modifyCount (_ + 1)
+        , on "click" \_ -> modify count (_ + 1)
         ]
         elEmpty
       box
@@ -44,4 +44,4 @@ counter = do
                 "flex justify-center items-center text-3xl z-20 relative pointer-events-none transition-colors"
             , colorScheme <#> mergeColorScheme >>> _.reverse
             ]
-        ] $ text $ show <$> count
+        ] $ text $ show <$> read count
