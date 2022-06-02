@@ -47,7 +47,7 @@ root = do
 
   isDisplayExamples <- useState false
 
-  id <- liftEffect $ setTimeout 00 $ set isDisplayExamples true
+  id <- liftEffect $ setTimeout 200 $ set isDisplayExamples true
 
   useUnmountJelly $ liftEffect $ clearTimeout id
 
