@@ -500,10 +500,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 100vh;
 }
 
-.h-1 {
-  height: 0.25rem;
-}
-
 .h-full {
   height: 100%;
 }
