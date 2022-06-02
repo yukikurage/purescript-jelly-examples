@@ -16,6 +16,7 @@ to generate this file without the comments in this block.
   , "effect"
   , "jelly"
   , "js-timers"
+  , "maybe"
   , "prelude"
   , "strings"
   , "tuples"

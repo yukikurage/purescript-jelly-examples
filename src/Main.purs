@@ -5,16 +5,15 @@ import Prelude
 import Components.Counter (counter)
 import Components.Icon (icon)
 import Components.Logo (logo)
+import Components.ToDoList (todoList)
 import Contexts (Contexts)
 import Contexts.ColorMode (ColorMode(..), mergeColorScheme, useColorMode, useColorScheme)
-import Data.Tuple (fst)
-import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
-import Jelly.Data.Jelly (new, read, set)
+import Jelly.Data.Jelly (modify, new, read, set)
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, elEmpty, elWhen, text)
 import Jelly.Hooks.UseState (useState)
@@ -37,9 +36,12 @@ openLink str = liftEffect $
     =<< location
     =<< window
 
+exampleTotalNum :: Int
+exampleTotalNum = 2
+
 root :: Component Contexts
 root = do
-  jellyIs /\ _ <- useTypingString
+  jellyIs <- useTypingString $ pure
     "An easy way to create interactive web apps."
 
   colorMode <- useColorMode
@@ -51,6 +53,8 @@ root = do
 
   useUnmountJelly $ liftEffect $ clearTimeout id
 
+  exampleNum <- useState 0
+
   box
     [ classes
         [ pure
@@ -60,7 +64,7 @@ root = do
     ]
     do
       box
-        [ classes [ pure "py-3 px-8 flex justify-between w-screen" ]
+        [ classes [ pure "py-6 px-8 flex justify-between w-screen" ]
         ]
         do
           box [ classes [ pure "w-12" ] ] elEmpty
@@ -99,23 +103,30 @@ root = do
                     "h-full w-32 hover:-translate-x-1 transition-transform"
                 , popIn
                 ]
+            , on "click" \_ ->
+                modify exampleNum $ \n -> (n - 1) `mod` exampleTotalNum
             ]
             $ icon
             $ pure "fa-xl fa-solid fa-chevron-left"
-          counter
+
+          elWhen ((_ == 0) <$> read exampleNum) $ counter
+          elWhen ((_ == 1) <$> read exampleNum) $ todoList
+
           button
             [ classes
                 [ pure
                     "h-full w-32 hover:translate-x-1 transition-transform"
                 , popIn
                 ]
+            , on "click" \_ ->
+                modify exampleNum $ \n -> (n + 1) `mod` exampleTotalNum
             ]
             $ icon
             $ pure "fa-xl fa-solid fa-chevron-right"
 
       elWhen (read isDisplayExamples) $ box
         [ classes
-            [ pure "flex flex-row w-full justify-start items-center p-10" ]
+            [ pure "flex flex-row w-full justify-start items-center py-6 px-8" ]
         ]
         do
           popIn <- usePopIn
@@ -138,5 +149,11 @@ root = do
                     "flex-grow flex flex-row items-center justify-center w-full"
                 ]
             ]
-            $ text =<< fst <$> useTypingString "A Button"
+            $ text =<< useTypingString do
+                en <- read exampleNum
+                pure case en of
+                  0 -> "Counter"
+                  1 -> "ToDoList"
+                  _ -> "Unknown"
+
           box [ classes [ pure "w-12" ] ] elEmpty
