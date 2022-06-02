@@ -20,7 +20,6 @@ to generate this file without the comments in this block.
   , "maybe"
   , "prelude"
   , "strings"
-  , "tuples"
   , "web-html"
   ]
 , packages = ./packages.dhall
