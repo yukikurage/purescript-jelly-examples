@@ -153,7 +153,7 @@ root = do
                 en <- read exampleNum
                 pure case en of
                   0 -> "Counter"
-                  1 -> "ToDoList"
+                  1 -> "ToDo List"
                   _ -> "Unknown"
 
           box [ classes [ pure "w-12" ] ] elEmpty
