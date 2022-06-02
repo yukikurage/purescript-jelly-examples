@@ -8,7 +8,6 @@ import Contexts.ColorMode (mergeColorScheme, useColorScheme)
 import Data.Array (filter)
 import Data.Functor (mapFlipped)
 import Data.Maybe (Maybe(..))
-import Data.Tuple.Nested ((/\))
 import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Jelly (Jelly, modify, new, read)
@@ -33,7 +32,7 @@ initItems =
     , completed: false
     }
   , { id: "2"
-    , text: "Create Web App"
+    , text: "Create Web Apps"
     , completed: false
     }
   ]
