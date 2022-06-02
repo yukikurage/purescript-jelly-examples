@@ -2,9 +2,9 @@ module Components.Counter where
 
 import Prelude
 
-import Components.PopIn (popIn)
 import Contexts (Contexts)
 import Contexts.ColorMode (mergeColorScheme, useColorScheme)
+import Hooks.UsePopIn (usePopIn)
 import Jelly.Data.Jelly (modify, read)
 import Jelly.Data.Props (classes, on)
 import Jelly.HTML (Component, elEmpty, text)
@@ -16,9 +16,13 @@ counter = do
   colorScheme <- useColorScheme
   count <- useState 0
 
-  popIn $ box
+  popIn <- usePopIn
+
+  box
     [ classes
-        [ pure "h-24 w-24 flex flex-col justify-center items-center relative" ]
+        [ pure "h-24 w-24 flex flex-col justify-center items-center relative"
+        , popIn
+        ]
     ]
     do
       box

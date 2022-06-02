@@ -5,7 +5,6 @@ import Prelude
 import Data.String (length, take)
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect.Class (liftEffect)
-import Effect.Class.Console (log)
 import Effect.Timer (clearInterval, setInterval)
 import Jelly.Data.Hooks (Hooks)
 import Jelly.Data.Jelly (Jelly, alone, read, set)

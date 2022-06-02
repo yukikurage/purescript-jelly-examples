@@ -5,7 +5,6 @@ import Prelude
 import Components.Counter (counter)
 import Components.Icon (icon)
 import Components.Logo (logo)
-import Components.PopIn (popIn)
 import Contexts (Contexts)
 import Contexts.ColorMode (ColorMode(..), mergeColorScheme, useColorMode, useColorScheme)
 import Data.Tuple (fst)
@@ -13,6 +12,7 @@ import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
+import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Jelly (new, read, set)
 import Jelly.Data.Props (classes, on)
@@ -28,8 +28,7 @@ import Web.HTML.Window (location)
 main :: Effect Unit
 main = do
   colorMode <- new Light
-  runComponent { colorMode }
-    root
+  runComponent { colorMode } root
 
 openLink :: forall m. MonadEffect m => String -> m Unit
 openLink str = liftEffect $
@@ -48,7 +47,7 @@ root = do
 
   isDisplayExamples <- useState false
 
-  id <- liftEffect $ setTimeout 400 $ set isDisplayExamples true
+  id <- liftEffect $ setTimeout 00 $ set isDisplayExamples true
 
   useUnmountJelly $ liftEffect $ clearTimeout id
 
@@ -93,13 +92,14 @@ root = do
             ]
         ]
         do
+          popIn <- usePopIn
           button
             [ classes
                 [ pure
                     "h-full w-32 hover:-translate-x-1 transition-transform"
+                , popIn
                 ]
             ]
-            $ popIn
             $ icon
             $ pure "fa-xl fa-solid fa-chevron-left"
           counter
@@ -107,9 +107,9 @@ root = do
             [ classes
                 [ pure
                     "h-full w-32 hover:translate-x-1 transition-transform"
+                , popIn
                 ]
             ]
-            $ popIn
             $ icon
             $ pure "fa-xl fa-solid fa-chevron-right"
 
@@ -118,15 +118,16 @@ root = do
             [ pure "flex flex-row w-full justify-start items-center p-10" ]
         ]
         do
+          popIn <- usePopIn
           button
             [ classes
                 [ pure
                     "w-12 h-12 px-2 flex justify-center items-center"
+                , popIn
                 ]
             , on "click" \_ -> openLink
                 "https://github.com/yukikurage/purescript-jelly-examples"
             ]
-            $ popIn
             $ icon
             $ pure
                 "fa-xl fa-brands fa-github flex justify-center items-center hover:scale-110 transition-all "
