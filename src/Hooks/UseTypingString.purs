@@ -15,7 +15,7 @@ useTypingString
 useTypingString strJelly = do
   stateSig /\ stateMod <- signal ""
 
-  id <- liftEffect $ setInterval 30 $ detach do
+  id <- liftEffect $ setInterval 20 $ detach do
     targetStr <- strJelly
     stateStr <- stateSig
     liftEffect $ when (targetStr /= stateStr)
