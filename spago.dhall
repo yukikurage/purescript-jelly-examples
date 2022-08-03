@@ -15,11 +15,13 @@ to generate this file without the comments in this block.
   [ "arrays"
   , "console"
   , "effect"
+  , "foldable-traversable"
   , "jelly"
   , "js-timers"
   , "maybe"
   , "prelude"
   , "strings"
+  , "tuples"
   , "web-html"
   ]
 , packages = ./packages.dhall

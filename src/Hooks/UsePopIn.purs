@@ -2,21 +2,20 @@ module Hooks.UsePopIn where
 
 import Prelude
 
+import Data.Tuple.Nested ((/\))
 import Effect.Class (liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
-import Jelly.Data.Hooks (Hooks)
-import Jelly.Data.Jelly (Jelly, alone, read, set)
-import Jelly.Hooks.UseState (useState)
-import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
+import Jelly.Data.Hook (Hook)
+import Jelly.Data.Signal (Signal, signal)
+import Jelly.Hooks.UseUnmountSignal (useUnmountSignal)
 
-usePopIn :: forall r. Hooks r (Jelly String)
+usePopIn :: forall r. Hook r (Signal String)
 usePopIn = do
-  isMounted <- useState false
+  isMountedSig /\ isMountedMod <- signal false
 
-  id <- liftEffect $ setTimeout 10 $ alone do
-    set isMounted true
+  id <- liftEffect $ setTimeout 10 $ isMountedMod $ const true
 
-  useUnmountJelly $ liftEffect $ clearTimeout id
+  useUnmountSignal $ liftEffect $ clearTimeout id
 
-  pure $ ifM (read isMounted) (pure "transition-all scale-100 opacity-100")
+  pure $ ifM isMountedSig (pure "transition-all scale-100 opacity-100")
     (pure "transition-all scale-50 opacity-0")

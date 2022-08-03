@@ -7,153 +7,136 @@ import Components.Icon (icon)
 import Components.Logo (logo)
 import Components.ToDoList (todoList)
 import Contexts (Contexts)
-import Contexts.ColorMode (ColorMode(..), mergeColorScheme, useColorMode, useColorScheme)
+import Contexts.ColorMode (ColorMode(..), provideColorMode, useColorMode, useColorScheme)
+import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import Effect.Class (class MonadEffect, liftEffect)
+import Effect.Class (liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
-import Jelly.Data.Jelly (modify, new, read, set)
-import Jelly.Data.Props (classes, on)
-import Jelly.HTML (Component, elEmpty, elWhen, text)
-import Jelly.Hooks.UseState (useState)
-import Jelly.Hooks.UseUnmountJelly (useUnmountJelly)
-import Jelly.RunComponent (runComponent)
-import Utils (box, button)
-import Web.HTML (window)
-import Web.HTML.Location (setHref)
-import Web.HTML.Window (location)
+import Jelly.Data.Component (Component, text)
+import Jelly.Data.Signal (signal)
+import Jelly.Hooks.Ch (ch, chWhen)
+import Jelly.Hooks.On (on)
+import Jelly.Hooks.UseUnmountSignal (useUnmountSignal)
+import Jelly.LaunchApp (launchApp)
+import Utils (box, button, classes, openLink)
 
 main :: Effect Unit
 main = do
-  colorMode <- new Light
-  runComponent { colorMode } root
-
-openLink :: forall m. MonadEffect m => String -> m Unit
-openLink str = liftEffect $
-  setHref
-    str
-    =<< location
-    =<< window
+  colorMode <- provideColorMode
+  launchApp root { colorMode }
 
 exampleTotalNum :: Int
 exampleTotalNum = 2
 
 root :: Component Contexts
-root = do
+root = box do
   jellyIs <- useTypingString $ pure
     "An easy way to create interactive web apps."
 
-  colorMode <- useColorMode
-  colorScheme <- useColorScheme
+  colorModeSig /\ colorModeMod <- useColorMode
+  colorSchemeSig <- useColorScheme
 
-  isDisplayExamples <- useState false
+  isDisplayExamplesSig /\ isDisplayExamplesMod <- signal false
 
-  id <- liftEffect $ setTimeout 200 $ set isDisplayExamples true
+  id <- liftEffect $ setTimeout 200 $ isDisplayExamplesMod $ const true
 
-  useUnmountJelly $ liftEffect $ clearTimeout id
+  useUnmountSignal $ liftEffect $ clearTimeout id
 
-  exampleNum <- useState 0
+  exampleNumSig /\ exampleNumMod <- signal 0
 
-  box
-    [ classes
-        [ pure
-            "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
-        , colorScheme <#> mergeColorScheme >>> _.primary
-        ]
+  classes
+    [ pure
+        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
+    , (_.primary.text) <$> colorSchemeSig
+    , (_.primary.background) <$> colorSchemeSig
     ]
-    do
-      box
-        [ classes [ pure "py-6 px-8 flex justify-between w-screen" ]
+
+  ch $ box do
+    classes [ pure "py-6 px-8 flex justify-between w-screen" ]
+    ch $ box $ classes [ pure "w-12" ]
+    ch $ logo
+    ch $ button do
+      classes
+        [ pure
+            "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
         ]
-        do
-          box [ classes [ pure "w-12" ] ] elEmpty
-          logo
-          button
-            [ classes
-                [ pure
-                    "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
-                ]
-            , on "click" \_ -> do
-                cm <- read colorMode
-                case cm of
-                  Light -> set colorMode Dark
-                  Dark -> set colorMode Light
-            ]
-            do
-              icon do
-                cm <- read colorMode
-                case cm of
-                  Light -> pure "fa-solid fa-sun fa-lg"
-                  Dark -> pure "fa-solid fa-moon fa-lg"
+      on "click" \_ -> do
+        liftEffect $ colorModeMod \cm -> case cm of
+          Light -> Dark
+          Dark -> Light
 
-      box [ classes [ pure "py-6" ] ] $ text jellyIs
+      ch $ icon do
+        cm <- colorModeSig
+        case cm of
+          Light -> pure "fa-solid fa-sun fa-lg"
+          Dark -> pure "fa-solid fa-moon fa-lg"
 
-      elWhen (read isDisplayExamples) $ box
-        [ classes
-            [ pure
-                "flex-grow flex flex-row items-center justify-between w-full"
-            ]
+  ch $ box do
+    classes [ pure "py-6" ]
+    ch $ text jellyIs
+
+  chWhen isDisplayExamplesSig $ box do
+    classes
+      [ pure
+          "flex-grow flex flex-row items-center justify-between w-full"
+      ]
+    popIn <- usePopIn
+
+    ch $ button do
+      classes
+        [ pure
+            "h-full w-32 hover:-translate-x-1 transition-transform"
+        , popIn
         ]
-        do
-          popIn <- usePopIn
-          button
-            [ classes
-                [ pure
-                    "h-full w-32 hover:-translate-x-1 transition-transform"
-                , popIn
-                ]
-            , on "click" \_ ->
-                modify exampleNum $ \n -> (n - 1) `mod` exampleTotalNum
-            ]
-            $ icon
-            $ pure "fa-xl fa-solid fa-chevron-left"
+      on "click" \_ -> liftEffect
+        $ exampleNumMod
+        $ \n -> (n - 1) `mod` exampleTotalNum
 
-          elWhen ((_ == 0) <$> read exampleNum) $ counter
-          elWhen ((_ == 1) <$> read exampleNum) $ todoList
+      ch $ icon $ pure "fa-xl fa-solid fa-chevron-left"
 
-          button
-            [ classes
-                [ pure
-                    "h-full w-32 hover:translate-x-1 transition-transform"
-                , popIn
-                ]
-            , on "click" \_ ->
-                modify exampleNum $ \n -> (n + 1) `mod` exampleTotalNum
-            ]
-            $ icon
-            $ pure "fa-xl fa-solid fa-chevron-right"
+    chWhen ((_ == 0) <$> exampleNumSig) $ counter
+    chWhen ((_ == 1) <$> exampleNumSig) $ todoList
 
-      elWhen (read isDisplayExamples) $ box
-        [ classes
-            [ pure "flex flex-row w-full justify-start items-center py-6 px-8" ]
+    ch $ button do
+      classes
+        [ pure
+            "h-full w-32 hover:translate-x-1 transition-transform"
+        , popIn
         ]
-        do
-          popIn <- usePopIn
-          button
-            [ classes
-                [ pure
-                    "w-12 h-12 px-2 flex justify-center items-center"
-                , popIn
-                ]
-            , on "click" \_ -> openLink
-                "https://github.com/yukikurage/purescript-jelly-examples"
-            ]
-            $ icon
-            $ pure
-                "fa-xl fa-brands fa-github flex justify-center items-center hover:scale-110 transition-all "
+      on "click" \_ -> liftEffect
+        $ exampleNumMod
+        $ \n -> (n + 1) `mod` exampleTotalNum
+      ch $ icon $ pure "fa-xl fa-solid fa-chevron-right"
 
-          box
-            [ classes
-                [ pure
-                    "flex-grow flex flex-row items-center justify-center w-full"
-                ]
-            ]
-            $ text =<< useTypingString do
-                en <- read exampleNum
-                pure case en of
-                  0 -> "Counter"
-                  1 -> "ToDo List"
-                  _ -> "Unknown"
+  chWhen isDisplayExamplesSig $ box do
+    classes
+      [ pure "flex flex-row w-full justify-start items-center py-6 px-8" ]
+    popIn <- usePopIn
 
-          box [ classes [ pure "w-12" ] ] elEmpty
+    ch $ button do
+      classes
+        [ pure
+            "w-12 h-12 px-2 flex justify-center items-center"
+        , popIn
+        ]
+      on "click" \_ -> openLink
+        "https://github.com/yukikurage/purescript-jelly-examples"
+
+      ch $ icon $ pure
+        "fa-xl fa-brands fa-github flex justify-center items-center hover:scale-110 transition-all "
+    ch $ box do
+      classes
+        [ pure
+            "flex-grow flex flex-row items-center justify-center w-full"
+        ]
+      exampleName <- useTypingString do
+        en <- exampleNumSig
+        pure case en of
+          0 -> "Counter"
+          1 -> "ToDo List"
+          _ -> "Unknown"
+      ch $ text exampleName
+
+    ch $ box $ classes [ pure "w-12" ]

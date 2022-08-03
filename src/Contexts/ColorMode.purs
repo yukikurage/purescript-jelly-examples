@@ -2,8 +2,11 @@ module Contexts.ColorMode where
 
 import Prelude
 
-import Jelly.Data.Hooks (Hooks)
-import Jelly.Data.Jelly (Jelly, JellyRef, read)
+import Data.Tuple.Nested (type (/\), (/\))
+import Effect (Effect)
+import Effect.Class (class MonadEffect)
+import Jelly.Data.Hook (Hook)
+import Jelly.Data.Signal (Signal, signal)
 import Jelly.Hooks.UseContext (useContext)
 
 data ColorMode = Light | Dark
@@ -13,24 +16,43 @@ type ColorSchemeInternal =
   , background :: String
   }
 
-type ColorScheme internal =
-  { primary :: internal
-  , highlight :: internal
-  , reverse :: internal
+type ColorScheme =
+  { primary :: ColorSchemeInternal
+  , highlight :: ColorSchemeInternal
+  , reverse :: ColorSchemeInternal
   }
 
 derive instance Eq ColorMode
 
 type ColorModeContext r =
-  (colorMode :: JellyRef ColorMode | r)
+  ( colorMode :: Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit)
+  | r
+  )
 
 useColorMode
-  :: forall r. Hooks (Record (ColorModeContext r)) (JellyRef ColorMode)
+  :: forall r
+   . Hook (Record (ColorModeContext r))
+       ( Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit)
+       )
 useColorMode = do
   { colorMode } <- useContext
   pure colorMode
 
-getColorScheme :: ColorMode -> ColorScheme ColorSchemeInternal
+useColorScheme
+  :: forall r
+   . Hook (Record (ColorModeContext r))
+       (Signal ColorScheme)
+useColorScheme = do
+  colorModeSig /\ _ <- useColorMode
+  pure $ getColorScheme <$> colorModeSig
+
+provideColorMode
+  :: forall m
+   . MonadEffect m
+  => m (Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit))
+provideColorMode = signal Light
+
+getColorScheme :: ColorMode -> ColorScheme
 getColorScheme = case _ of
   Light ->
     { primary:
@@ -60,23 +82,3 @@ getColorScheme = case _ of
         , background: "bg-white"
         }
     }
-
-mergeColorScheme :: ColorScheme ColorSchemeInternal -> ColorScheme String
-mergeColorScheme colorScheme =
-  let
-    merge :: ColorSchemeInternal -> String
-    merge colorSchemeInternal = colorSchemeInternal.text <> " " <>
-      colorSchemeInternal.background
-  in
-    { primary: merge colorScheme.primary
-    , highlight: merge colorScheme.highlight
-    , reverse: merge colorScheme.reverse
-    }
-
-useColorScheme
-  :: forall r
-   . Hooks (Record (ColorModeContext r))
-       (Jelly (ColorScheme ColorSchemeInternal))
-useColorScheme = do
-  colorMode <- useColorMode
-  pure $ getColorScheme <$> read colorMode
