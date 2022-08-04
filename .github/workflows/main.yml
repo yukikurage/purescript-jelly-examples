@@ -35,10 +35,17 @@ jobs:
       run: npm run build
     - name: delete index.js from git .ignore
       run: sed -i '/public/d' .gitignore
-    - name: Push to GitHub
-      uses: s0/git-publish-subdir-action@master
-      env:
-        REPO: self
-        BRANCH: clf-pages
-        FOLDER: public
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./public
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v1
