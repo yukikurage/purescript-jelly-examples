@@ -33,7 +33,7 @@ exampleTotalNum = 2
 root :: Component Contexts
 root = box do
   jellyIs <- useTypingString $ pure
-    "An easy way to create interactive web apps."
+    "Reactivity-based Web Framework"
 
   colorModeSig /\ colorModeMod <- useColorMode
   colorSchemeSig <- useColorScheme
@@ -48,7 +48,7 @@ root = box do
 
   classes
     [ pure
-        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
+        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-color"
     , (_.primary.text) <$> colorSchemeSig
     , (_.primary.background) <$> colorSchemeSig
     ]

@@ -27,15 +27,15 @@ type TodoListItem =
 initItems :: Array TodoListItem
 initItems =
   [ { id: "0"
-    , text: "Learn PureScript"
+    , text: "Jelly"
     , completed: true
     }
   , { id: "1"
-    , text: "Learn Jelly"
+    , text: "Examples"
     , completed: false
     }
   , { id: "2"
-    , text: "Create Web Apps"
+    , text: "PureScript"
     , completed: false
     }
   ]
@@ -73,7 +73,7 @@ todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
             pure
               if completed then cs.highlight.text <> " " <>
                 cs.highlight.background
-              else cs.reverse.text <> " " <>
+              else cs.highlight.text <> " " <>
                 cs.reverse.background
         ]
       on "click" $ \_ -> do
@@ -87,11 +87,34 @@ todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
         [ pure
             "rounded-md p-3 w-80 flex flex-row justify-between items-center transition-colors"
         , (_.primary.text) <$> colorScheme
-        , (_.primary.background) <$> colorScheme
         ]
       txt <- useTypingString textSignal
 
-      ch $ text $ txt
+      ch $ box do
+        classes [ pure "relative" ]
+        ch $ box do
+          classes
+            [ pure
+                "content-[''] block absolute top-1/2 left-0 h-[2px] transition-all"
+            , do
+                completed <- isCompletedSignal
+                pure $
+                  if completed then "opacity-100 w-full"
+                  else "opacity-0 w-3/4"
+            , (_.reverse.background) <$> colorScheme
+            ]
+
+        ch $ box do
+          classes
+            [ pure "p-2 transition-colors"
+            , do
+                completed <- isCompletedSignal
+                cs <- colorScheme
+                pure $
+                  if completed then cs.disabled.text
+                  else ""
+            ]
+          ch $ text $ txt
       ch $ button do
         classes
           [ pure
@@ -99,7 +122,7 @@ todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
           ]
         on "click" $ \_ -> deleteTodoListItem
 
-        ch $ icon $ pure "fa-solid fa-trash-can"
+        ch $ icon $ pure "fa-solid fa-solid fa-xmark"
 
 todoList
   :: Component Contexts
@@ -117,7 +140,7 @@ todoList = box do
             prevItems
       , setCompleted: \completed -> do
           tli <- todoListItemSig
-          liftEffect $itemsMod \prevItems ->
+          liftEffect $ itemsMod \prevItems ->
             mapFlipped prevItems \prevItem ->
               if prevItem.id == tli.id then prevItem
                 { completed = completed }
