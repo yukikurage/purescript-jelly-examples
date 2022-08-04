@@ -48,14 +48,21 @@ root = box do
 
   classes
     [ pure
-        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-color"
+        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-all"
     , (_.primary.text) <$> colorSchemeSig
     , (_.primary.background) <$> colorSchemeSig
     ]
 
   ch $ box do
-    classes [ pure "py-6 px-8 flex justify-between w-screen" ]
-    ch $ box $ classes [ pure "w-12" ]
+    classes [ pure "py-6 px-8 flex justify-between w-screen relative" ]
+    ch $ box $ classes [ pure "hidden md:block w-12" ]
+    ch $ box do
+      classes
+        [ pure
+            "absolute w-60 md:w-56 mt-7 h-5 z-10 rounded-t-md -left-6 md:left-1/2 md:transform md:-translate-x-1/2 transition-all"
+        , (_.highlight.background) <$> colorSchemeSig
+        , (_.primary.text) <$> colorSchemeSig
+        ]
     ch $ logo
     ch $ button do
       classes
@@ -80,14 +87,14 @@ root = box do
   chWhen isDisplayExamplesSig $ box do
     classes
       [ pure
-          "flex-grow flex flex-row items-center justify-between w-full"
+          "flex flex-grow flex-row items-center justify-center md:justify-between w-full"
       ]
     popIn <- usePopIn
 
     ch $ button do
       classes
         [ pure
-            "h-full w-32 hover:-translate-x-1 transition-transform"
+            "hidden md:block h-full w-32 hover:-translate-x-1 transition-transform"
         , popIn
         ]
       on "click" \_ -> liftEffect
@@ -102,13 +109,43 @@ root = box do
     ch $ button do
       classes
         [ pure
-            "h-full w-32 hover:translate-x-1 transition-transform"
+            "hidden md:block h-full w-32 hover:translate-x-1 transition-transform"
         , popIn
         ]
       on "click" \_ -> liftEffect
         $ exampleNumMod
         $ \n -> (n + 1) `mod` exampleTotalNum
       ch $ icon $ pure "fa-xl fa-solid fa-chevron-right"
+
+  chWhen isDisplayExamplesSig $ box do
+    classes
+      [ pure
+          "flex md:hidden flex-row items-center justify-start w-full gap-2 px-8"
+      ]
+    popIn <- usePopIn
+
+    ch $ button do
+      classes
+        [ pure
+            "md:hidden h-16 w-12 hover:-translate-x-1 transition-transform"
+        , popIn
+        ]
+      on "click" \_ -> liftEffect
+        $ exampleNumMod
+        $ \n -> (n - 1) `mod` exampleTotalNum
+
+      ch $ icon $ pure "fa-lg fa-solid fa-chevron-left"
+
+    ch $ button do
+      classes
+        [ pure
+            "md:hidden h-16 w-12 hover:translate-x-1 transition-transform"
+        , popIn
+        ]
+      on "click" \_ -> liftEffect
+        $ exampleNumMod
+        $ \n -> (n + 1) `mod` exampleTotalNum
+      ch $ icon $ pure "fa-lg fa-solid fa-chevron-right"
 
   chWhen isDisplayExamplesSig $ box do
     classes

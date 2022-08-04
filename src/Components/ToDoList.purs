@@ -85,7 +85,7 @@ todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
     ch $ box do
       classes
         [ pure
-            "rounded-md p-3 w-80 flex flex-row justify-between items-center transition-colors"
+            "rounded-md p-3 w-60 md:w-80 flex flex-row justify-between items-center transition-colors"
         , (_.primary.text) <$> colorScheme
         ]
       txt <- useTypingString textSignal
