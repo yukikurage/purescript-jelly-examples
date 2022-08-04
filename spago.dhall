@@ -21,7 +21,10 @@ to generate this file without the comments in this block.
   , "maybe"
   , "prelude"
   , "strings"
+  , "transformers"
   , "tuples"
+  , "web-dom"
+  , "web-events"
   , "web-html"
   , "web-storage"
   ]
