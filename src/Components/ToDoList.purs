@@ -31,7 +31,7 @@ initItems =
     , completed: true
     }
   , { id: "1"
-    , text: "Examples"
+    , text: "Example"
     , completed: false
     }
   , { id: "2"
