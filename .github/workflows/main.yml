@@ -15,6 +15,13 @@ jobs:
         node-version: 14.x
     - name: Install NPM packages
       run: npm ci
+    - name: Cache PureScript dependencies
+      uses: actions/cache@v2
+      with:
+        key: ${{ runner.os }}-spago-${{ hashFiles('**/*.dhall') }}
+        path: |
+          .spago
+          output
     - name: Build website
       run: npm run build
     - name: delete index.js from git .ignore
