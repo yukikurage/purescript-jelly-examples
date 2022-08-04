@@ -14,10 +14,12 @@ import Effect.Class (liftEffect)
 import Effect.Timer (clearTimeout, setTimeout)
 import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
+import Hooks.UseWindowHeight (useWindowHeight)
 import Jelly.Data.Component (Component, text)
 import Jelly.Data.Signal (signal)
 import Jelly.Hooks.Ch (ch, chWhen)
 import Jelly.Hooks.On (on)
+import Jelly.Hooks.Prop (prop)
 import Jelly.Hooks.UseUnmountSignal (useUnmountSignal)
 import Jelly.LaunchApp (launchApp)
 import Utils (box, button, classes, openLink)
@@ -32,6 +34,8 @@ exampleTotalNum = 2
 
 root :: Component Contexts
 root = box do
+  windowHeight <- useWindowHeight
+
   jellyIs <- useTypingString $ pure
     "Reactivity-based Web Framework"
 
@@ -46,9 +50,13 @@ root = box do
 
   exampleNumSig /\ exampleNumMod <- signal 0
 
+  prop "style" do
+    wh <- windowHeight
+    pure $ "height:" <> show wh <> "px;"
+
   classes
     [ pure
-        "h-screen w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-all"
+        "w-screen relative text-xl overflow-hidden flex flex-col items-center font-Inconsolata transition-colors"
     , (_.primary.text) <$> colorSchemeSig
     , (_.primary.background) <$> colorSchemeSig
     ]
@@ -59,7 +67,7 @@ root = box do
     ch $ box do
       classes
         [ pure
-            "absolute w-60 md:w-56 mt-7 h-5 z-10 rounded-t-md -left-6 md:left-1/2 md:transform md:-translate-x-1/2 transition-all"
+            "absolute w-60 md:w-56 mt-7 h-5 z-10 rounded-t-md -left-6 md:left-1/2 md:transform md:-translate-x-1/2 transition-colors"
         , (_.highlight.background) <$> colorSchemeSig
         , (_.primary.text) <$> colorSchemeSig
         ]
