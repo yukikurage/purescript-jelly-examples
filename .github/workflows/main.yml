@@ -42,8 +42,6 @@ jobs:
           ${{ runner.os }}-spago-
     - name: Build website
       run: npm run build
-    - name: delete index.js from git .ignore
-      run: sed -i '/public/d' .gitignore
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
