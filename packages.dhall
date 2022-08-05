@@ -106,6 +106,9 @@ in  upstream
     { dependencies =
       [ "arrays"
       , "effect"
+      , "foldable-traversable"
+      , "foreign-object"
+      , "js-timers"
       , "maybe"
       , "prelude"
       , "safely"
@@ -120,5 +123,5 @@ in  upstream
     , repo =
         "https://github.com/yukikurage/purescript-jelly"
     , version =
-        "v0.3.1"
+        "v0.4.0"
     }

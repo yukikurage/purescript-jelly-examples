@@ -5,25 +5,22 @@ import Prelude
 import Data.String (length, take)
 import Data.Tuple.Nested ((/\))
 import Effect.Class (liftEffect)
-import Effect.Timer (clearInterval, setInterval)
 import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal, detach, signal)
-import Jelly.Hooks.UseUnmountSignal (useUnmountSignal)
+import Jelly.Data.Signal (Signal, readSignal, signal, writeAtom)
+import Jelly.Hooks.UseInterval (useInterval)
 
 useTypingString
   :: forall r. Signal String -> Hook r (Signal String)
-useTypingString strJelly = do
-  stateSig /\ stateMod <- signal ""
+useTypingString targetSig = do
+  stateSig /\ stateAtom <- signal ""
 
-  id <- liftEffect $ setInterval 20 $ detach do
-    targetStr <- strJelly
-    stateStr <- stateSig
+  useInterval 20 do
+    targetStr <- readSignal targetSig
+    stateStr <- readSignal stateSig
     liftEffect $ when (targetStr /= stateStr)
       if take (length stateStr) targetStr == stateStr then
-        stateMod $ const $ take (length stateStr + 1) targetStr
+        writeAtom stateAtom $ take (length stateStr + 1) targetStr
       else
-        stateMod $ const $ take (length stateStr - 1) stateStr
-
-  useUnmountSignal $ liftEffect $ clearInterval id
+        writeAtom stateAtom $ take (length stateStr - 1) stateStr
 
   pure $ stateSig

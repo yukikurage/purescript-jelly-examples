@@ -9,14 +9,16 @@ import Data.Array (filter)
 import Data.Functor (mapFlipped)
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested ((/\))
+import Effect (Effect)
 import Effect.Class (liftEffect)
+import Hooks.UseClass (useClass)
 import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Component (Component, text)
-import Jelly.Data.Signal (Signal, signal)
+import Jelly.Data.Signal (Signal, modifyAtom_, readSignal, signal)
 import Jelly.Hooks.Ch (ch, chWhen, chsFor)
 import Jelly.Hooks.On (on)
-import Utils (box, button, classes)
+import Utils (box, button)
 
 type TodoListItem =
   { id :: String
@@ -45,81 +47,73 @@ getItemKey = _.id
 
 todoListItemComponent
   :: { todoListItem :: Signal TodoListItem
-     , deleteTodoListItem :: Signal Unit
-     , setCompleted :: Boolean -> Signal Unit
+     , deleteTodoListItem :: Effect Unit
+     , setCompleted :: Boolean -> Effect Unit
      }
   -> Component Contexts
 todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
   do
-    popIn <- usePopIn
     colorScheme <- useColorScheme
 
     let
       textSignal = _.text <$> todoListItem
       isCompletedSignal = _.completed <$> todoListItem
-    classes
 
-      [ pure "flex flex-row items-center gap-1 transition-transform"
-      , popIn
-      ]
+    usePopIn
+
+    useClass $ pure "flex flex-row items-center gap-1 transition-transform"
 
     ch $ button do
-      classes
-        [ pure
-            "rounded-md w-8 h-8 flex flex-row justify-center items-center hover:scale-110 origin-center transition-all"
-        , do
-            completed <- isCompletedSignal
-            cs <- colorScheme
-            pure
-              if completed then cs.highlight.text <> " " <>
-                cs.highlight.background
-              else cs.highlight.text <> " " <>
-                cs.reverse.background
-        ]
-      on "click" $ \_ -> do
+      useClass $ pure
+        "rounded-md w-8 h-8 flex flex-row justify-center items-center hover:scale-110 origin-center transition-all"
+      useClass do
         completed <- isCompletedSignal
+        cs <- colorScheme
+        pure
+          if completed then cs.highlight.text <> " " <>
+            cs.highlight.background
+          else cs.highlight.text <> " " <>
+            cs.reverse.background
+
+      on "click" $ \_ -> do
+        completed <- readSignal isCompletedSignal
         setCompleted $ not completed
 
       chWhen isCompletedSignal $ icon $ pure "fa-solid fa-check"
 
     ch $ box do
-      classes
-        [ pure
-            "rounded-md p-3 w-60 md:w-80 flex flex-row justify-between items-center transition-colors"
-        , (_.primary.text) <$> colorScheme
-        ]
+      useClass $ pure
+        "rounded-md p-3 w-60 md:w-80 flex flex-row justify-between items-center transition-colors"
+      useClass $ (_.primary.text) <$> colorScheme
+
       txt <- useTypingString textSignal
 
       ch $ box do
-        classes [ pure "relative" ]
+        useClass $ pure "relative"
         ch $ box do
-          classes
-            [ pure
-                "content-[''] block absolute top-1/2 left-0 h-[2px] transition-all"
-            , do
-                completed <- isCompletedSignal
-                pure $
-                  if completed then "opacity-100 w-full"
-                  else "opacity-0 w-3/4"
-            , (_.reverse.background) <$> colorScheme
-            ]
+          useClass $ pure
+            "content-[''] block absolute top-1/2 left-0 h-[2px] transition-all"
+          useClass do
+            completed <- isCompletedSignal
+            pure $
+              if completed then "opacity-100 w-full"
+              else "opacity-0 w-3/4"
+          useClass $ (_.reverse.background) <$> colorScheme
 
         ch $ box do
-          classes
-            [ pure "p-2 transition-colors"
-            , do
-                completed <- isCompletedSignal
-                cs <- colorScheme
-                pure $
-                  if completed then cs.disabled.text
-                  else ""
-            ]
+          useClass $ pure "p-2 transition-colors"
+          useClass $ do
+            completed <- isCompletedSignal
+            cs <- colorScheme
+            pure $
+              if completed then cs.disabled.text
+              else ""
           ch $ text $ txt
+
       ch $ button do
-        classes
-          [ pure
-              "w-8 h-8 flex flex-row justify-center items-center hover:scale-110 origin-center transition-all"
-          ]
+        useClass $ pure
+          "w-8 h-8 flex flex-row justify-center items-center hover:scale-110 origin-center transition-all"
+
         on "click" $ \_ -> deleteTodoListItem
 
         ch $ icon $ pure "fa-solid fa-solid fa-xmark"
@@ -127,20 +121,20 @@ todoListItemComponent { todoListItem, deleteTodoListItem, setCompleted } = box
 todoList
   :: Component Contexts
 todoList = box do
-  itemsSig /\ itemsMod <- signal initItems
+  itemsSig /\ itemsAtom <- signal initItems
 
-  classes [ pure "flex flex-col gap-2" ]
+  useClass $ pure "flex flex-col gap-2"
 
   chsFor itemsSig (getItemKey >>> Just) \todoListItemSig ->
     todoListItemComponent
       { todoListItem: todoListItemSig
       , deleteTodoListItem: do
-          tli <- todoListItemSig
-          liftEffect $ itemsMod \prevItems -> filter (\a -> a.id /= tli.id)
+          tli <- readSignal todoListItemSig
+          modifyAtom_ itemsAtom $ \prevItems -> filter (\a -> a.id /= tli.id)
             prevItems
       , setCompleted: \completed -> do
-          tli <- todoListItemSig
-          liftEffect $ itemsMod \prevItems ->
+          tli <- readSignal todoListItemSig
+          liftEffect $ modifyAtom_ itemsAtom \prevItems ->
             mapFlipped prevItems \prevItem ->
               if prevItem.id == tli.id then prevItem
                 { completed = completed }

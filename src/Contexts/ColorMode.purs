@@ -7,7 +7,7 @@ import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal, detach, signal)
+import Jelly.Data.Signal (Signal, modifyAtom, signal)
 import Jelly.Hooks.UseContext (useContext)
 import Web.HTML (window)
 import Web.HTML.Window (localStorage)
@@ -66,14 +66,13 @@ provideColorMode = do
       Just "dark" -> Dark
       _ -> Light
 
-  colorModeSig /\ colorModeMod <- signal savedColorMode
+  colorModeSig /\ colorModAtom <- signal savedColorMode
   let
-    colorModeModWithStorage f = do
-      colorModeMod f
-      nowColorMode <- detach colorModeSig
+    colorModAtomWithStorage f = do
+      nowColorMode <- modifyAtom colorModAtom f
       liftEffect $ setItem "colorMode" (show $ nowColorMode) storage
 
-  pure $ colorModeSig /\ colorModeModWithStorage
+  pure $ colorModeSig /\ colorModAtomWithStorage
 
 getColorScheme :: ColorMode -> ColorScheme
 getColorScheme = case _ of
