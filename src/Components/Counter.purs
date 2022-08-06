@@ -6,11 +6,11 @@ import Contexts (Contexts)
 import Contexts.ColorMode (useColorScheme)
 import Data.Tuple.Nested ((/\))
 import Hooks.UseClass (useClass)
-import Hooks.UsePopIn (usePopIn)
 import Jelly.Data.Component (Component, text)
 import Jelly.Data.Signal (modifyAtom_, signal)
 import Jelly.Hooks.Ch (ch)
 import Jelly.Hooks.On (on)
+import Styles (usePopIn)
 import Utils (box, button, elEmpty)
 
 counter :: Component Contexts

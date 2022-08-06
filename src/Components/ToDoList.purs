@@ -12,12 +12,12 @@ import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Hooks.UseClass (useClass)
-import Hooks.UsePopIn (usePopIn)
 import Hooks.UseTypingString (useTypingString)
 import Jelly.Data.Component (Component, text)
 import Jelly.Data.Signal (Signal, modifyAtom_, readSignal, signal)
 import Jelly.Hooks.Ch (ch, chWhen, chsFor)
 import Jelly.Hooks.On (on)
+import Styles (usePopIn)
 import Utils (box, button)
 
 type TodoListItem =

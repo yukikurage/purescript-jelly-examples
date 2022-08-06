@@ -2,9 +2,7 @@ module Hooks.UseClass where
 
 import Prelude
 
-import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal)
-import Jelly.Hooks.Prop ((:+))
+import Jelly (Hook, Signal, (:+))
 
 useClass :: forall r. Signal String -> Hook r Unit
 useClass cssSig = do

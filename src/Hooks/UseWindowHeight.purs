@@ -4,9 +4,7 @@ import Prelude
 
 import Data.Tuple.Nested ((/\))
 import Effect.Class (liftEffect)
-import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal, signal, writeAtom)
-import Jelly.Hooks.UseEventListener (useEventListener)
+import Jelly (Hook, Signal, signal, useEventListener, writeAtom)
 import Web.HTML (window)
 import Web.HTML.Window as Window
 

@@ -5,9 +5,7 @@ import Prelude
 import Data.String (length, take)
 import Data.Tuple.Nested ((/\))
 import Effect.Class (liftEffect)
-import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal, readSignal, signal, writeAtom)
-import Jelly.Hooks.UseInterval (useInterval)
+import Jelly (Hook, Signal, readSignal, signal, useInterval, writeAtom)
 
 useTypingString
   :: forall r. Signal String -> Hook r (Signal String)

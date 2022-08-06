@@ -3,8 +3,7 @@ module Utils where
 import Prelude
 
 import Effect.Class (class MonadEffect, liftEffect)
-import Jelly.Data.Component (Component, el)
-import Jelly.Data.Hook (Hook)
+import Jelly (Component, Hook, el)
 import Web.HTML (window)
 import Web.HTML.Location (setHref)
 import Web.HTML.Window (location)
