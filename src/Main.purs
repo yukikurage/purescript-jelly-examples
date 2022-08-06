@@ -34,7 +34,6 @@ exampleTotalNum = 2
 
 root :: Component Contexts
 root = box do
-
   jellyIs <- useTypingString $ pure
     "Reactivity-based Web Framework"
 
@@ -71,7 +70,7 @@ root = box do
         "w-12 rounded-full hover:scale-110 transition-all flex justify-center items-center"
 
       on "click" \_ -> do
-        liftEffect $ colorModeMod \cm -> case cm of
+        liftEffect $ modifyAtom_ colorModeMod \cm -> case cm of
           Light -> Dark
           Dark -> Light
 

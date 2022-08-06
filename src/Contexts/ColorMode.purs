@@ -5,9 +5,9 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
-import Effect.Class (class MonadEffect, liftEffect)
+import Effect.Class (liftEffect)
 import Jelly.Data.Hook (Hook)
-import Jelly.Data.Signal (Signal, modifyAtom, signal)
+import Jelly.Data.Signal (Atom, Signal, launch_, signal)
 import Jelly.Hooks.UseContext (useContext)
 import Web.HTML (window)
 import Web.HTML.Window (localStorage)
@@ -33,15 +33,14 @@ instance Show ColorMode where
   show Dark = "dark"
 
 type ColorModeContext r =
-  ( colorMode :: Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit)
+  ( colorMode :: Signal ColorMode /\ Atom ColorMode
   | r
   )
 
 useColorMode
   :: forall r
    . Hook (Record (ColorModeContext r))
-       ( Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit)
-       )
+       (Signal ColorMode /\ Atom ColorMode)
 useColorMode = do
   { colorMode } <- useContext
   pure colorMode
@@ -55,9 +54,7 @@ useColorScheme = do
   pure $ getColorScheme <$> colorModeSig
 
 provideColorMode
-  :: forall m
-   . MonadEffect m
-  => m (Signal ColorMode /\ ((ColorMode -> ColorMode) -> Effect Unit))
+  :: Effect (Signal ColorMode /\ Atom ColorMode)
 provideColorMode = do
   storage <- liftEffect $ localStorage =<< window
   cmStr <- liftEffect $ getItem "colorMode" storage
@@ -67,12 +64,12 @@ provideColorMode = do
       _ -> Light
 
   colorModeSig /\ colorModAtom <- signal savedColorMode
-  let
-    colorModAtomWithStorage f = do
-      nowColorMode <- modifyAtom colorModAtom f
-      liftEffect $ setItem "colorMode" (show $ nowColorMode) storage
 
-  pure $ colorModeSig /\ colorModAtomWithStorage
+  launch_ do
+    colorMode <- colorModeSig
+    liftEffect $ setItem "colorMode" (show colorMode) storage
+
+  pure $ colorModeSig /\ colorModAtom
 
 getColorScheme :: ColorMode -> ColorScheme
 getColorScheme = case _ of
